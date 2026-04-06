@@ -13,6 +13,7 @@ interface Props {
 
 export function HabitCard({ habit, onToggle, onDelete, onFreeze }: Props) {
   const [expanded, setExpanded] = useState(false)
+  const [confirmDelete, setConfirmDelete] = useState(false)
   const color = HABIT_COLORS.find(c => c.name === habit.color) ?? HABIT_COLORS[0]
   const streak = getCurrentStreak(habit)
   const longest = getLongestStreak(habit)
@@ -25,11 +26,10 @@ export function HabitCard({ habit, onToggle, onDelete, onFreeze }: Props) {
 
   return (
     <div className={[
-      'rounded-3xl transition-all paper-texture',
-      'bg-white/80 dark:bg-night-card/80',
+      'relative paper-texture rounded-2xl transition-all overflow-hidden',
       cardDone
-        ? 'shadow-ghibli-lg ring-2 ' + color.ring
-        : 'shadow-ghibli border border-parchment dark:border-night-border',
+        ? 'shadow-paper-lg ring-2 bg-[#eef6ec]/90 dark:bg-[#1e2e1e]/80 ' + color.ring
+        : 'shadow-paper border border-warm-faint/50 dark:border-dusk-border bg-card/85 dark:bg-dusk-card/85',
     ].join(' ')}>
       <div className="p-4">
         {/* Top row */}
@@ -38,11 +38,11 @@ export function HabitCard({ habit, onToggle, onDelete, onFreeze }: Props) {
             <div className={`w-11 h-11 rounded-2xl flex items-center justify-center text-2xl flex-shrink-0 ${color.light}`}>
               {habit.emoji}
             </div>
-            <div className="min-w-0">
+            <div className="min-w-0 flex-1">
               <div className="flex items-center gap-1.5">
-                <p className="font-bold text-ink dark:text-[#e8dcc8] truncate">{habit.name}</p>
+                <p className="font-bold text-warm dark:text-[#e8dcc8] truncate">{habit.name}</p>
                 {isWeekly && (
-                  <span className="text-xs bg-parchment dark:bg-night-border text-ink-muted dark:text-[#b0a898] px-1.5 py-0.5 rounded-lg flex-shrink-0">
+                  <span className="text-xs bg-warm-faint/70 dark:bg-dusk-border text-warm-muted dark:text-[#b0a898] px-1.5 py-0.5 rounded-lg flex-shrink-0">
                     {habit.targetDaysPerWeek}×/wk
                   </span>
                 )}
@@ -62,31 +62,59 @@ export function HabitCard({ habit, onToggle, onDelete, onFreeze }: Props) {
             </div>
           </div>
 
-          <button
-            onClick={onToggle}
-            className={[
-              'flex-shrink-0 px-3 py-1.5 rounded-xl text-sm font-bold transition-all',
-              done
-                ? `${color.bg} text-white shadow-sm scale-95`
-                : 'bg-parchment dark:bg-night-border text-ink-light dark:text-[#c0b8a8] hover:bg-[#e8dcc8] dark:hover:bg-[#4a4770]',
-            ].join(' ')}
-          >
-            {done ? '✓ Done' : 'Mark Done'}
-          </button>
+          <div className="flex items-center gap-1.5 flex-shrink-0">
+            {/* Delete button — always visible */}
+            {confirmDelete ? (
+              <div className="flex items-center gap-1">
+                <button
+                  onClick={() => onDelete()}
+                  className="text-xs bg-red-500 text-white px-2 py-1 rounded-lg font-bold"
+                >
+                  Yes
+                </button>
+                <button
+                  onClick={() => setConfirmDelete(false)}
+                  className="text-xs bg-warm-faint dark:bg-dusk-border text-warm-muted dark:text-[#b0a898] px-2 py-1 rounded-lg font-bold"
+                >
+                  No
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={() => setConfirmDelete(true)}
+                className="p-1.5 rounded-lg text-warm-faint hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                title="Delete habit"
+              >
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                  <path d="M1 3h12M5 3V2a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v1M11 3l-.9 8.1A1 1 0 0 1 9.1 12H4.9a1 1 0 0 1-1-.9L3 3" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </button>
+            )}
+
+            {/* Mark done button */}
+            <button
+              onClick={onToggle}
+              className={[
+                'px-3 py-1.5 rounded-xl text-sm font-bold transition-all',
+                done
+                  ? `${color.bg} text-white shadow-sm scale-95`
+                  : 'bg-warm-faint/60 dark:bg-dusk-border text-warm dark:text-[#c0b8a8] hover:bg-warm-faint dark:hover:bg-[#4a4f65] active:scale-90',
+              ].join(' ')}
+            >
+              {done ? '✓ Done' : 'Mark Done'}
+            </button>
+          </div>
         </div>
 
         {/* Stats row */}
-        <div className="mt-3 flex items-center gap-3 text-xs text-ink-muted dark:text-[#9c9080]">
-          {isWeekly
-            ? <span>🔥 {streak} wk{streak !== 1 ? 's' : ''}</span>
-            : <span>🔥 {streak}d</span>
-          }
+        <div className="mt-3 flex items-center gap-3 text-xs text-warm-muted dark:text-[#9c9080]">
+          <span>{isWeekly ? `🔥 ${streak} wk${streak !== 1 ? 's' : ''}` : `🔥 ${streak}d`}</span>
           <span>🏆 {longest} best</span>
           <span>📊 {rate}%</span>
           {habit.freezesRemaining > 0 && <span>🧊 {habit.freezesRemaining}</span>}
           <button
             onClick={() => setExpanded(e => !e)}
-            className="ml-auto text-ink-muted dark:text-[#9c9080] hover:text-ink dark:hover:text-[#e8dcc8] transition-colors text-xs"
+            className="ml-auto text-warm-muted hover:text-warm dark:hover:text-[#e8dcc8] transition-colors"
           >
             {expanded ? '▲ Hide' : '▼ History'}
           </button>
@@ -95,22 +123,14 @@ export function HabitCard({ habit, onToggle, onDelete, onFreeze }: Props) {
         {expanded && (
           <div className="mt-2">
             <HeatmapGrid habit={habit} />
-            <div className="mt-3 flex gap-2">
-              {habit.freezesRemaining > 0 && !isWeekly && (
-                <button
-                  onClick={onFreeze}
-                  className="text-xs bg-sky/20 text-sky-600 dark:text-sky px-2.5 py-1 rounded-lg hover:bg-sky/30 transition-colors"
-                >
-                  🧊 Use Freeze
-                </button>
-              )}
+            {habit.freezesRemaining > 0 && !isWeekly && (
               <button
-                onClick={onDelete}
-                className="text-xs bg-red-50 dark:bg-red-900/20 text-red-400 px-2.5 py-1 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/40 transition-colors ml-auto"
+                onClick={onFreeze}
+                className="mt-3 text-xs bg-[#a8c8da]/30 text-teal-dark dark:text-teal-light px-2.5 py-1 rounded-lg hover:bg-[#a8c8da]/50 transition-colors"
               >
-                Delete
+                🧊 Use Freeze
               </button>
-            </div>
+            )}
           </div>
         )}
       </div>

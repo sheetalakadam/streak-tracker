@@ -22,10 +22,10 @@ export function AddHabitModal({ onAdd, onClose }: Props) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4 bg-black/50"
       onClick={e => { if (e.target === e.currentTarget) onClose() }}
     >
-      <div className="w-full max-w-md bg-white dark:bg-slate-900 rounded-2xl shadow-2xl p-6 animate-in slide-in-from-bottom duration-200">
+      <div className="w-full max-w-md bg-white dark:bg-slate-900 rounded-2xl shadow-2xl p-6 overflow-y-auto max-h-[85svh]">
         <h2 className="text-lg font-bold text-slate-900 dark:text-white mb-4">New Habit</h2>
 
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -54,7 +54,6 @@ export function AddHabitModal({ onAdd, onClose }: Props) {
           <div>
             <label className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-2 block">Habit Name</label>
             <input
-              autoFocus
               type="text"
               placeholder="e.g. Morning Run"
               value={name}

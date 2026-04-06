@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import type { Habit } from '../types'
 import { HABIT_COLORS } from '../types'
-import { getCurrentStreak, getLongestStreak, getCompletionRate, isCompletedToday } from '../utils/streaks'
+import { getCurrentStreak, getLongestStreak, getCompletionRate, isCompletedToday, getThisWeekProgress } from '../utils/streaks'
 import { HeatmapGrid } from './HeatmapGrid'
 
 interface Props {
@@ -18,10 +18,16 @@ export function HabitCard({ habit, onToggle, onDelete, onFreeze }: Props) {
   const longest = getLongestStreak(habit)
   const rate = getCompletionRate(habit)
   const done = isCompletedToday(habit)
+  const isWeekly = habit.frequency === 'weekly'
+  const weekProgress = isWeekly ? getThisWeekProgress(habit) : null
+
+  // For weekly habits, card highlights green when week target is met
+  const weekDone = isWeekly && weekProgress ? weekProgress.done >= weekProgress.target : false
+  const cardDone = isWeekly ? weekDone : done
 
   return (
     <div className={`rounded-2xl border transition-all shadow-sm ${
-      done
+      cardDone
         ? 'border-transparent bg-white dark:bg-slate-800 ring-2 ' + color.ring
         : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800'
     }`}>
@@ -33,9 +39,25 @@ export function HabitCard({ habit, onToggle, onDelete, onFreeze }: Props) {
               {habit.emoji}
             </div>
             <div className="min-w-0">
-              <p className="font-semibold text-slate-900 dark:text-white truncate">{habit.name}</p>
+              <div className="flex items-center gap-1.5">
+                <p className="font-semibold text-slate-900 dark:text-white truncate">{habit.name}</p>
+                {isWeekly && (
+                  <span className="text-xs bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400 px-1.5 py-0.5 rounded-md flex-shrink-0">
+                    {habit.targetDaysPerWeek}×/wk
+                  </span>
+                )}
+              </div>
               <p className={`text-sm font-medium ${color.text}`}>
-                {streak > 0 ? `🔥 ${streak} day${streak !== 1 ? 's' : ''}` : '💔 Start today!'}
+                {isWeekly
+                  ? weekProgress
+                    ? weekProgress.done >= weekProgress.target
+                      ? `✅ Week done! ${weekProgress.done}/${weekProgress.target}`
+                      : `${weekProgress.done}/${weekProgress.target} this week`
+                    : ''
+                  : streak > 0
+                    ? `🔥 ${streak} day${streak !== 1 ? 's' : ''}`
+                    : '💔 Start today!'
+                }
               </p>
             </div>
           </div>
@@ -55,11 +77,15 @@ export function HabitCard({ habit, onToggle, onDelete, onFreeze }: Props) {
 
         {/* Stats row */}
         <div className="mt-3 flex items-center gap-4 text-xs text-slate-500 dark:text-slate-400">
-          <span title="Current streak">🔥 {streak}d</span>
-          <span title="Longest streak">🏆 {longest}d best</span>
+          {isWeekly ? (
+            <span title="Weekly streak">🔥 {streak} wk{streak !== 1 ? 's' : ''}</span>
+          ) : (
+            <span title="Current streak">🔥 {streak}d</span>
+          )}
+          <span title="Longest streak">🏆 {longest} best</span>
           <span title="30-day completion rate">📊 {rate}%</span>
           {habit.freezesRemaining > 0 && (
-            <span title="Streak freezes remaining">🧊 {habit.freezesRemaining} freeze{habit.freezesRemaining !== 1 ? 's' : ''}</span>
+            <span title="Streak freezes remaining">🧊 {habit.freezesRemaining}</span>
           )}
           <button
             onClick={() => setExpanded(e => !e)}
@@ -74,7 +100,7 @@ export function HabitCard({ habit, onToggle, onDelete, onFreeze }: Props) {
           <div className="mt-1">
             <HeatmapGrid habit={habit} />
             <div className="mt-3 flex gap-2">
-              {habit.freezesRemaining > 0 && (
+              {habit.freezesRemaining > 0 && !isWeekly && (
                 <button
                   onClick={onFreeze}
                   className="text-xs bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 px-2 py-1 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors"

@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react'
 import { useHabits } from './hooks/useHabits'
+import { useNotifications } from './hooks/useNotifications'
 import { Header } from './components/Header'
 import { HabitCard } from './components/HabitCard'
 import { AddHabitModal } from './components/AddHabitModal'
 import { MilestoneModal } from './components/MilestoneModal'
+import { NotificationSettings } from './components/NotificationSettings'
 import { getCurrentStreak } from './utils/streaks'
 
 function useDarkMode() {
@@ -23,7 +25,9 @@ function useDarkMode() {
 
 export default function App() {
   const { habits, addHabit, deleteHabit, toggleToday, useFreeze, milestone, dismissMilestone } = useHabits()
+  const { reminderTime, setReminderTime, permission } = useNotifications(habits)
   const [showAdd, setShowAdd] = useState(false)
+  const [showNotifSettings, setShowNotifSettings] = useState(false)
   const [darkMode, toggleDark] = useDarkMode()
 
   const milestoneHabit = milestone
@@ -36,7 +40,13 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 transition-colors">
-      <Header onAdd={() => setShowAdd(true)} darkMode={darkMode} toggleDark={toggleDark} />
+      <Header
+        onAdd={() => setShowAdd(true)}
+        onNotifications={() => setShowNotifSettings(true)}
+        reminderTime={reminderTime}
+        darkMode={darkMode}
+        toggleDark={toggleDark}
+      />
 
       <main className="max-w-2xl mx-auto px-4 py-6">
         {/* Summary bar */}
@@ -89,6 +99,15 @@ export default function App() {
         <AddHabitModal
           onAdd={addHabit}
           onClose={() => setShowAdd(false)}
+        />
+      )}
+
+      {showNotifSettings && (
+        <NotificationSettings
+          reminderTime={reminderTime}
+          permission={permission}
+          onSetTime={setReminderTime}
+          onClose={() => setShowNotifSettings(false)}
         />
       )}
 

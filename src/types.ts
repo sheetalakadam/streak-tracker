@@ -2,11 +2,13 @@ export interface Habit {
   id: string
   name: string
   emoji: string
-  color: string // tailwind color class e.g. 'orange', 'blue'
+  color: string // tailwind color name e.g. 'orange', 'blue'
   createdAt: string // ISO date string YYYY-MM-DD
   completedDates: string[] // ["2026-04-01", ...]
   freezesRemaining: number // streak freeze tokens
   frozenDates: string[] // dates where freeze was used
+  frequency: 'daily' | 'weekly'
+  targetDaysPerWeek: number // 1–7 (for weekly habits); daily habits always use 7
 }
 
 export interface MilestoneInfo {

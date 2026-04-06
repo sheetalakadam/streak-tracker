@@ -4,9 +4,19 @@ import { getCurrentStreak, checkNewMilestone, today } from '../utils/streaks'
 
 const STORAGE_KEY = 'streak-tracker-habits'
 
+// Migrate old habits that don't have the new fields
+function migrate(habits: Habit[]): Habit[] {
+  return habits.map(h => ({
+    ...h,
+    frequency: h.frequency ?? ('daily' as const),
+    targetDaysPerWeek: h.targetDaysPerWeek ?? 7,
+  }))
+}
+
 function load(): Habit[] {
   try {
-    return JSON.parse(localStorage.getItem(STORAGE_KEY) ?? '[]')
+    const raw = JSON.parse(localStorage.getItem(STORAGE_KEY) ?? '[]')
+    return migrate(raw)
   } catch {
     return []
   }
@@ -25,7 +35,13 @@ export function useHabits() {
     setHabits(next)
   }, [])
 
-  const addHabit = useCallback((name: string, emoji: string, color: string) => {
+  const addHabit = useCallback((
+    name: string,
+    emoji: string,
+    color: string,
+    frequency: 'daily' | 'weekly' = 'daily',
+    targetDaysPerWeek = 7,
+  ) => {
     const habit: Habit = {
       id: crypto.randomUUID(),
       name,
@@ -35,6 +51,8 @@ export function useHabits() {
       completedDates: [],
       freezesRemaining: 2,
       frozenDates: [],
+      frequency,
+      targetDaysPerWeek,
     }
     update([...habits, habit])
   }, [habits, update])
@@ -71,7 +89,6 @@ export function useHabits() {
   const useFreeze = useCallback((id: string) => {
     const next = habits.map(h => {
       if (h.id !== id || h.freezesRemaining === 0) return h
-      // Freeze yesterday to keep the streak alive
       const d = new Date()
       d.setDate(d.getDate() - 1)
       const yest = d.toISOString().slice(0, 10)

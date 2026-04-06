@@ -1,73 +1,66 @@
-# React + TypeScript + Vite
+# 🔥 Streak Tracker
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A mobile-first PWA for tracking daily habit streaks. Installable on iPhone via Safari — no App Store needed.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- Add/delete habits with custom emoji and color
+- Mark habits done each day — streaks auto-calculate
+- 30-day heatmap calendar per habit
+- Milestone celebrations at 7 / 14 / 30 / 60 / 100 days (confetti)
+- Streak freeze tokens (2 per habit) — protect a streak if you miss a day
+- Completion rate % over 30 days
+- Dark mode (respects system preference, toggleable)
+- All data stored locally in `localStorage` — no account needed
+- Offline-capable via service worker (PWA)
 
-## React Compiler
+## Running locally
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
+npm run dev
+# open http://localhost:5173
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Build for production
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm run build
+# output goes to dist/
 ```
+
+## Install on iPhone
+
+1. Build and deploy (or run locally on your network)
+2. Open in Safari on iPhone
+3. Tap Share → "Add to Home Screen"
+4. App opens in fullscreen standalone mode
+
+## Tech stack
+
+- React 18 + TypeScript
+- Vite 8
+- Tailwind CSS v3
+- vite-plugin-pwa (Workbox)
+- canvas-confetti
+- localStorage (no backend)
+
+## Codebase overview
+
+```
+src/
+├── types.ts              # Habit interface, MILESTONES, HABIT_COLORS constants
+├── utils/streaks.ts      # getCurrentStreak, getLongestStreak, getCompletionRate, getLast30Days
+├── hooks/useHabits.ts    # All state + localStorage persistence + milestone detection
+├── components/
+│   ├── Header.tsx        # Top bar with dark mode toggle and Add button
+│   ├── HabitCard.tsx     # Per-habit card: streak, mark done, expand for heatmap
+│   ├── HeatmapGrid.tsx   # 30-day dot grid
+│   ├── AddHabitModal.tsx # Modal to create a new habit (emoji, name, color)
+│   └── MilestoneModal.tsx# Celebration modal + confetti on milestone hit
+└── App.tsx               # Root: summary bar, habit list, modal orchestration
+```
+
+## Want to add new features or instructions?
+
+Edit [`INSTRUCTIONS.md`](./INSTRUCTIONS.md) and share it with Claude Code.

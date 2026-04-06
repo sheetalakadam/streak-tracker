@@ -11,6 +11,10 @@ npm run build    # type-check + production build → dist/
 npm run lint     # ESLint
 ```
 
+## RULE: Always build before committing
+
+**Always run `npm run build` and confirm it succeeds before every `git commit`.** Never commit if the build fails or has TypeScript errors. This catches issues that `npm run dev` sometimes misses (e.g. `@apply` with custom Tailwind classes fails in dev but not always in build, or vice versa).
+
 **Always use `--legacy-peer-deps` and `--cache /tmp/npm-cache` when installing packages:**
 ```bash
 npm install --legacy-peer-deps --cache /tmp/npm-cache <package>

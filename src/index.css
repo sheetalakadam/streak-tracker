@@ -5,7 +5,12 @@
 @layer base {
   body {
     font-family: 'Nunito', system-ui, sans-serif;
-    @apply bg-cream text-ink dark:bg-night dark:text-[#e8dcc8];
+    background-color: #fef6e4;
+    color: #2d2416;
+  }
+  .dark body {
+    background-color: #1c1a2e;
+    color: #e8dcc8;
   }
 
   /* Remove 300ms tap delay on iOS */

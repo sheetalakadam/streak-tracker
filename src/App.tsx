@@ -49,11 +49,14 @@ function SootSprite() {
 }
 
 export default function App() {
-  const { habits, addHabit, deleteHabit, toggleToday, useFreeze, milestone, dismissMilestone } = useHabits()
+  const { habits, addHabit, editHabit, deleteHabit, toggleToday, useFreeze, milestone, dismissMilestone } = useHabits()
   const { reminderTime, setReminderTime, permission } = useNotifications(habits)
   const [showAdd, setShowAdd] = useState(false)
+  const [editingHabit, setEditingHabit] = useState<string | null>(null)
   const [showNotifSettings, setShowNotifSettings] = useState(false)
   const [darkMode, toggleDark] = useDarkMode()
+
+  const habitBeingEdited = editingHabit ? habits.find(h => h.id === editingHabit) : null
 
   const milestoneHabit = milestone
     ? habits.find(h => getCurrentStreak(h) >= milestone.days) ?? habits[habits.length - 1]
@@ -115,13 +118,30 @@ export default function App() {
                 onToggle={() => toggleToday(habit.id)}
                 onDelete={() => deleteHabit(habit.id)}
                 onFreeze={() => useFreeze(habit.id)}
+                onEdit={() => setEditingHabit(habit.id)}
               />
             ))}
           </div>
         )}
       </main>
 
-      {showAdd && <AddHabitModal onAdd={addHabit} onClose={() => setShowAdd(false)} />}
+      {showAdd && <AddHabitModal onSave={addHabit} onClose={() => setShowAdd(false)} />}
+      {habitBeingEdited && (
+        <AddHabitModal
+          initialValues={{
+            name: habitBeingEdited.name,
+            emoji: habitBeingEdited.emoji,
+            color: habitBeingEdited.color,
+            frequency: habitBeingEdited.frequency,
+            targetDaysPerWeek: habitBeingEdited.targetDaysPerWeek,
+          }}
+          onSave={(name, emoji, color, frequency, targetDaysPerWeek) => {
+            editHabit(habitBeingEdited.id, name, emoji, color, frequency, targetDaysPerWeek)
+            setEditingHabit(null)
+          }}
+          onClose={() => setEditingHabit(null)}
+        />
+      )}
       {showNotifSettings && (
         <NotificationSettings
           reminderTime={reminderTime}

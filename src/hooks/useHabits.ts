@@ -61,6 +61,17 @@ export function useHabits() {
     update(habits.filter(h => h.id !== id))
   }, [habits, update])
 
+  const editHabit = useCallback((
+    id: string,
+    name: string,
+    emoji: string,
+    color: string,
+    frequency: 'daily' | 'weekly',
+    targetDaysPerWeek: number,
+  ) => {
+    update(habits.map(h => h.id !== id ? h : { ...h, name, emoji, color, frequency, targetDaysPerWeek }))
+  }, [habits, update])
+
   const toggleToday = useCallback((id: string) => {
     const next = habits.map(h => {
       if (h.id !== id) return h
@@ -104,5 +115,5 @@ export function useHabits() {
 
   const dismissMilestone = useCallback(() => setMilestone(null), [])
 
-  return { habits, addHabit, deleteHabit, toggleToday, useFreeze, milestone, dismissMilestone }
+  return { habits, addHabit, editHabit, deleteHabit, toggleToday, useFreeze, milestone, dismissMilestone }
 }

@@ -9,9 +9,10 @@ interface Props {
   onToggle: () => void
   onDelete: () => void
   onFreeze: () => void
+  onEdit: () => void
 }
 
-export function HabitCard({ habit, onToggle, onDelete, onFreeze }: Props) {
+export function HabitCard({ habit, onToggle, onDelete, onFreeze, onEdit }: Props) {
   const [expanded, setExpanded] = useState(false)
   const [confirmDelete, setConfirmDelete] = useState(false)
   const color = HABIT_COLORS.find(c => c.name === habit.color) ?? HABIT_COLORS[0]
@@ -63,6 +64,17 @@ export function HabitCard({ habit, onToggle, onDelete, onFreeze }: Props) {
           </div>
 
           <div className="flex items-center gap-1.5 flex-shrink-0">
+            {/* Edit button */}
+            <button
+              onClick={onEdit}
+              className="p-1.5 rounded-lg text-warm-faint hover:text-teal hover:bg-teal/10 transition-colors"
+              title="Edit habit"
+            >
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                <path d="M9.5 2.5l2 2L4 12H2v-2L9.5 2.5z" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </button>
+
             {/* Delete button — always visible */}
             {confirmDelete ? (
               <div className="flex items-center gap-1">

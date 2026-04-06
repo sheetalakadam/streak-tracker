@@ -3,21 +3,31 @@ import { HABIT_COLORS } from '../types'
 
 const EMOJI_PRESETS = ['🏋️', '📚', '🧘', '🏃', '💧', '🎯', '✍️', '🎸', '🥗', '😴', '💊', '🌿']
 
-interface Props {
-  onAdd: (name: string, emoji: string, color: string, frequency: 'daily' | 'weekly', targetDaysPerWeek: number) => void
-  onClose: () => void
+interface InitialValues {
+  name: string
+  emoji: string
+  color: string
+  frequency: 'daily' | 'weekly'
+  targetDaysPerWeek: number
 }
 
-export function AddHabitModal({ onAdd, onClose }: Props) {
-  const [name, setName] = useState('')
-  const [emoji, setEmoji] = useState('🎯')
-  const [color, setColor] = useState('teal')
-  const [frequency, setFrequency] = useState<'daily' | 'weekly'>('daily')
-  const [targetDays, setTargetDays] = useState(3)
+interface Props {
+  onSave: (name: string, emoji: string, color: string, frequency: 'daily' | 'weekly', targetDaysPerWeek: number) => void
+  onClose: () => void
+  initialValues?: InitialValues
+}
+
+export function AddHabitModal({ onSave, onClose, initialValues }: Props) {
+  const isEditing = !!initialValues
+  const [name, setName] = useState(initialValues?.name ?? '')
+  const [emoji, setEmoji] = useState(initialValues?.emoji ?? '🎯')
+  const [color, setColor] = useState(initialValues?.color ?? 'teal')
+  const [frequency, setFrequency] = useState<'daily' | 'weekly'>(initialValues?.frequency ?? 'daily')
+  const [targetDays, setTargetDays] = useState(initialValues?.targetDaysPerWeek ?? 3)
 
   const handleAdd = () => {
     if (!name.trim()) return
-    onAdd(name.trim(), emoji, color, frequency, frequency === 'daily' ? 7 : targetDays)
+    onSave(name.trim(), emoji, color, frequency, frequency === 'daily' ? 7 : targetDays)
     onClose()
   }
 
@@ -27,7 +37,7 @@ export function AddHabitModal({ onAdd, onClose }: Props) {
       onClick={e => { if (e.target === e.currentTarget) onClose() }}
     >
       <div className="w-full max-w-md bg-card dark:bg-dusk-card rounded-3xl shadow-paper-lg border border-warm-faint/50 dark:border-dusk-border p-6 overflow-y-auto max-h-[85svh] paper-texture">
-        <h2 className="text-2xl font-black text-warm dark:text-[#e8dcc8] mb-4">New Habit</h2>
+        <h2 className="text-2xl font-black text-warm dark:text-[#e8dcc8] mb-4">{isEditing ? 'Edit Habit' : 'New Habit'}</h2>
 
         <div className="space-y-4">
           {/* Emoji */}
@@ -110,7 +120,7 @@ export function AddHabitModal({ onAdd, onClose }: Props) {
               className={`flex-1 py-3 rounded-2xl font-black text-white transition-colors ${
                 name.trim() ? 'bg-teal hover:bg-teal-dark shadow-paper' : 'bg-teal/40 cursor-not-allowed'
               }`}>
-              Add Habit
+              {isEditing ? 'Save Changes' : 'Add Habit'}
             </button>
           </div>
         </div>

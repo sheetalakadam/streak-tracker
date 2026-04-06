@@ -14,7 +14,7 @@ Edit this file to give me new feature requests, bug reports, or changes. Then op
 
 ## TODO
 
-- [ ] Fix: "Add Habit" button inside the modal does not work on iPhone (tapping does nothing even after typing a name). Desktop works fine. Needs Safari mobile debugging — likely a touch event or z-index issue.
+- [x] Fix: iPhone modal buttons — resolved once deployed to Vercel (HTTPS). Was a Safari/HTTP local dev issue, not a code bug.
 - [ ] Edit habit — allow renaming, changing emoji or color after creation
 - [ ] Export / backup data — download habits as JSON, re-import to restore
 - [ ] Auto-deploy — connect GitHub repo to Vercel dashboard so every `git push` deploys automatically (currently needs manual `vercel --prod`)

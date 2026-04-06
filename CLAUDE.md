@@ -6,6 +6,9 @@ A React + TypeScript PWA streak tracker. Single-page app, no backend, no routing
 **Live URL:** https://streak-tracker-chi-two.vercel.app
 **GitHub:** https://github.com/sheetalakadam/streak-tracker
 
+## iPhone / Safari note
+Safari on iPhone requires **HTTPS** for many features to work correctly (touch events, PWA install, Notifications API). Always test mobile bugs against the Vercel deployment, not the local dev server over WiFi — the local HTTP connection can mask or cause issues that don't exist in production.
+
 ## RULE: Always build before committing
 **Always run `npm run build` and confirm it succeeds before every `git commit`.** The dev server and production build process CSS differently — bugs can slip through one but not the other.
 

@@ -14,11 +14,10 @@ Edit this file to give me new feature requests, bug reports, or changes. Then op
 
 ## TODO
 
-<!-- Add new feature requests here. Example:
-- [ ] Add weekly habit frequency (e.g. "Gym 3x per week")
-- [ ] Push notifications — remind me at 9pm daily if I haven't marked a habit done
-- [ ] Edit habit name/emoji/color after creation
--->
+- [ ] Fix: "Add Habit" button inside the modal does not work on iPhone (tapping does nothing even after typing a name). Desktop works fine. Needs Safari mobile debugging — likely a touch event or z-index issue.
+- [ ] Edit habit — allow renaming, changing emoji or color after creation
+- [ ] Export / backup data — download habits as JSON, re-import to restore
+- [ ] Auto-deploy — connect GitHub repo to Vercel dashboard so every `git push` deploys automatically (currently needs manual `vercel --prod`)
 
 ---
 
@@ -33,13 +32,21 @@ Edit this file to give me new feature requests, bug reports, or changes. Then op
 - [x] Dark mode toggle (persisted, respects system preference)
 - [x] Dashboard summary bar (done today, total habits, combined streak days)
 - [x] PWA — installable on iPhone via Safari
+- [x] Weekly habits — frequency toggle (daily/weekly) with X times/week target
+- [x] Push notifications — daily reminder via browser Notifications API (bell icon in header)
+- [x] Delete habit — trash icon always visible on card with inline confirm step
+- [x] Ghibli-inspired UI — Nunito font, sky-to-meadow gradient background, warm teal/terracotta palette, paper texture, soot sprite empty state
+- [x] Deployed to Vercel — https://streak-tracker-chi-two.vercel.app
 
 ---
 
 ## Notes
 
 - Keep it a single-page app, no login, no backend
-- Data stored in localStorage only
+- Data stored in localStorage only — no sync across devices
 - Mobile-first design — must work well on iPhone
-- Modern UI with Tailwind CSS, dark mode support
+- Nunito font (NOT Caveat or any italic/cursive — user doesn't like it)
+- Tailwind CSS only, no CSS modules or inline styles
+- Use `dark:` variants for dark mode (class-based, toggled on `<html>`)
 - The app should feel fast and lightweight
+- Always run `npm run build` before committing

@@ -1,18 +1,28 @@
-# 🔥 Streak Tracker
+# 🌿 Streak Tracker
 
-A mobile-first PWA for tracking daily habit streaks. Installable on iPhone via Safari — no App Store needed.
+A Ghibli-inspired mobile-first PWA for tracking daily and weekly habit streaks. Installable on iPhone — no App Store needed.
+
+**Live:** https://streak-tracker-chi-two.vercel.app
 
 ## Features
 
 - Add/delete habits with custom emoji and color
+- **Daily or weekly** frequency — e.g. "Gym 3x per week"
 - Mark habits done each day — streaks auto-calculate
 - 30-day heatmap calendar per habit
 - Milestone celebrations at 7 / 14 / 30 / 60 / 100 days (confetti)
 - Streak freeze tokens (2 per habit) — protect a streak if you miss a day
 - Completion rate % over 30 days
+- Daily push notification reminder (browser Notifications API)
 - Dark mode (respects system preference, toggleable)
-- All data stored locally in `localStorage` — no account needed
-- Offline-capable via service worker (PWA)
+- All data in `localStorage` — no account, no backend
+- Offline-capable PWA (service worker)
+
+## Install on iPhone
+
+1. Open https://streak-tracker-chi-two.vercel.app in Safari
+2. Tap Share → "Add to Home Screen"
+3. App opens fullscreen, works offline
 
 ## Running locally
 
@@ -22,45 +32,42 @@ npm run dev
 # open http://localhost:5173
 ```
 
-## Build for production
+## Deploy
 
 ```bash
-npm run build
-# output goes to dist/
+npm run build   # verify build passes first
+vercel --prod
 ```
-
-## Install on iPhone
-
-1. Build and deploy (or run locally on your network)
-2. Open in Safari on iPhone
-3. Tap Share → "Add to Home Screen"
-4. App opens in fullscreen standalone mode
 
 ## Tech stack
 
 - React 18 + TypeScript
-- Vite 8
+- Vite 8 + vite-plugin-pwa (Workbox)
 - Tailwind CSS v3
-- vite-plugin-pwa (Workbox)
+- Nunito font (Google Fonts)
 - canvas-confetti
 - localStorage (no backend)
+- Vercel (hosting)
 
-## Codebase overview
+## Codebase
 
 ```
 src/
-├── types.ts              # Habit interface, MILESTONES, HABIT_COLORS constants
-├── utils/streaks.ts      # getCurrentStreak, getLongestStreak, getCompletionRate, getLast30Days
-├── hooks/useHabits.ts    # All state + localStorage persistence + milestone detection
+├── types.ts              # Habit interface, MILESTONES, HABIT_COLORS
+├── utils/streaks.ts      # All streak calculation logic (pure functions)
+├── hooks/
+│   ├── useHabits.ts      # State + localStorage + milestone detection
+│   └── useNotifications.ts # Browser notification reminder
 ├── components/
-│   ├── Header.tsx        # Top bar with dark mode toggle and Add button
-│   ├── HabitCard.tsx     # Per-habit card: streak, mark done, expand for heatmap
+│   ├── Header.tsx
+│   ├── HabitCard.tsx     # Card with delete confirm, heatmap expand
 │   ├── HeatmapGrid.tsx   # 30-day dot grid
-│   ├── AddHabitModal.tsx # Modal to create a new habit (emoji, name, color)
-│   └── MilestoneModal.tsx# Celebration modal + confetti on milestone hit
+│   ├── AddHabitModal.tsx # Create habit (emoji, name, frequency, color)
+│   ├── MilestoneModal.tsx# Celebration + confetti
+│   └── NotificationSettings.tsx
 └── App.tsx               # Root: summary bar, habit list, modal orchestration
 ```
 
-## Want to add new features or instructions?
+## Want to add features?
 
-Edit [`INSTRUCTIONS.md`](./INSTRUCTIONS.md) and share it with Claude Code.
+Edit [`INSTRUCTIONS.md`](./INSTRUCTIONS.md) — add items under TODO, then tell Claude Code to implement them.
